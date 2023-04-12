@@ -7,7 +7,7 @@ import sal.parsing.sam.Util
 
 trait KMedians extends BaseParsing {
   val kMediansKeyWord: String = "kmedians"
-  
+
   def kMediansOperator: Parser[KMediansExp] =
     kMediansKeyWord ~ "(" ~ identifier ~ "," ~ int ~ ")" ^^
       { case kmed ~ lpar ~ id ~ c1 ~ k ~ rpar =>
@@ -17,19 +17,19 @@ trait KMedians extends BaseParsing {
 
 case class KMediansExp(field: String, k: Int, memory: HashMap[String, String])
     extends OperatorExp(field, memory) with Util {
-  
+
   override def createOpString(): String = {
-    val lstream = memory.get(Constants.CurrentLStream).get
-    val rstream = memory.get(Constants.CurrentRStream).get
+    val lstream = memory.getOrElse(Constants.CurrentLStream, "")
+    val rstream = memory.getOrElse(Constants.CurrentRStream, "")
 
     // Get the tuple type of the input stream
-    val tupleType = memory.get(lstream + Constants.TupleType).get
+    val tupleType = memory.getOrElse(lstream + Constants.TupleType, "")
 
     // Generate SAM code for the K-medians operator
-    val opString = s"""identifier = "$lstream";
+    val opString = s"""  identifier = "$lstream";
     auto $lstream = std::make_shared<KMedians<$tupleType>>($k);
     ${addRegisterStatements(lstream, rstream, memory)}"""
-  
+
     opString
   }
 }
