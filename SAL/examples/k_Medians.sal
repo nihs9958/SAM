@@ -1,0 +1,10 @@
+create input stream MyStream (field1 string, field2 int);
+create output stream MyOutput (field1 string, field2 double);
+
+define operator MyKMediansOp
+  input MyStream
+  output MyOutput
+  kmedians(field2, 3)
+end operator;
+
+MyStream -> MyKMediansOp -> MyOutput;
