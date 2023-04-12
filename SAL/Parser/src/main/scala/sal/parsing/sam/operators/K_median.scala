@@ -6,6 +6,8 @@ import sal.parsing.sam.Constants
 import sal.parsing.sam.Util
 
 trait KMedians extends BaseParsing {
+  val kMediansKeyWord: String = "kmedians"
+  
   def kMediansOperator: Parser[KMediansExp] =
     kMediansKeyWord ~ "(" ~ identifier ~ "," ~ int ~ ")" ^^
       { case kmed ~ lpar ~ id ~ c1 ~ k ~ rpar =>
