@@ -18,7 +18,7 @@ class KMediansSpec extends FlatSpec with KMedians {
   it must "fail to parse with invalid input" in {
     val input = "kmedians(Stream1, invalid)"
     val parsedResult = parseAll(kMediansOperator, input)
-    assert(parsedResult.failed)
+    assert(parsedResult.isInstanceOf[Failure])
   }
 
   it must "generate correct C++ code" in {
@@ -45,4 +45,3 @@ class KMediansSpec extends FlatSpec with KMedians {
     assert(parsedResult.get.createOpString() == expectedOutput)
   }
 }
-
