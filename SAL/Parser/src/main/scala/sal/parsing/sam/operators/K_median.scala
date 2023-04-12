@@ -25,9 +25,13 @@ case class KMediansExp(field: String, k: Int, memory: HashMap[String, String])
     // Get the tuple type of the input stream
     val tupleType = memory.getOrElse(lstream + Constants.TupleType, throw new IllegalStateException("TupleType not found in memory"))
 
+    // Get the key fields of the input stream
+    val numKeys = memory.getOrElse(lstream + Constants.NumKeys, throw new IllegalStateException("NumKeys not found in memory")).toInt
+    val keyFields = (0 until numKeys).map(i => memory.getOrElse(lstream + Constants.KeyStr + i, throw new IllegalStateException("KeyStr not found in memory"))).toList
+
     // Generate SAM code for the K-medians operator
     val opString = s"""  identifier = "$lstream";
-    auto $lstream = std::make_shared<KMedians<$tupleType>>($k);
+    auto $lstream = std::make_shared<KMedians<$tupleType, ${keyFields.mkString(", ")}>>($k);
     ${addRegisterStatements(lstream, rstream, memory)}"""
   
     opString
