@@ -33,14 +33,15 @@ case class KMediansExp(field: String, k: Int, memory: HashMap[String, String])
     opString
   }
 
-  def addRegisterStatements(identifier: String, rstream: String, memory: HashMap[String, String]): String = {
-    val producer = "producer" // Replace with the appropriate producer object
-    val subscriber = "subscriber" // Replace with the appropriate subscriber object
+ override def addRegisterStatements(identifier: String, rstream: String, memory: HashMap[String, String]): String = {
+  val producer = "producer" // Replace with the appropriate producer object
+  val subscriber = "subscriber" // Replace with the appropriate subscriber object
 
-    s"""addOperator($identifier);
-    registerConsumer($identifier, "$identifier");
-    if ($subscriber != NULL) {
-      $producer->registerSubscriber($subscriber, $identifier);
-    }"""
-  }
+  s"""addOperator($identifier);
+  registerConsumer($identifier, "$identifier");
+  if ($subscriber != NULL) {
+    $producer->registerSubscriber($subscriber, $identifier);
+  }"""
+}
+
 }
