@@ -26,9 +26,9 @@ case class KMediansExp(field: String, k: Int, memory: HashMap[String, String])
     val tupleType = memory.get(lstream + Constants.TupleType).get
 
     // Generate SAM code for the K-medians operator
-    val opString = s"""  identifier = "$lstream";
-    auto $lstream = std::make_shared<KMedians<$tupleType>>($k);
-    ${addRegisterStatements(lstream, rstream, memory)}"""
+    val opString = s"""auto $field = std::make_shared<KMedians<$tupleType>>($k);
+${addRegisterStatements(field, rstream, memory)}"""
+
   
     opString
   }
