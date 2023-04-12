@@ -27,7 +27,7 @@ case class KMediansExp(field: String, k: Int, memory: HashMap[String, String])
 
     // Generate SAM code for the K-medians operator
     val opString = s"""identifier = "$field";
-    auto $field = std::make_shared<KMedians<$tupleType>>($k);
+    auto $field = std::make_shared<KMedians<>>($k);
     ${addRegisterStatements(field, rstream, memory)}"""
 
     opString
