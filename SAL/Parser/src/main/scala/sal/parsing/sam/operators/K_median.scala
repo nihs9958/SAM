@@ -23,8 +23,9 @@ case class KMediansExp(field: String, k: Int, memory: HashMap[String, String])
     val rstream = memory.getOrElse(Constants.CurrentRStream, "")
 
     // Get the tuple type of the input stream
-    val tupleType = memory.get(lstream + Constants.TupleType)
-      .getOrElse(throw new NoSuchElementException("TupleType not defined in memory"))
+  
+    val tupleType = memory.getOrElse(lstream + Constants.TupleType, "")
+    memory += Constants.TupleType -> tupleType
 
     // Generate SAM code for the K-medians operator
     val opString = s"""identifier = "$field";
