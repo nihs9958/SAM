@@ -1,49 +1,40 @@
 package sal.parsing.sam.operators
 
-import scala.collection.mutable.HashMap
-import sal.parsing.sam.BaseParsing
+import com.typesafe.scalalogging.LazyLogging
 import sal.parsing.sam.Constants
 import sal.parsing.sam.Util
+import scala.collection.mutable.HashMap
 
-trait KMedians extends BaseParsing {
-  val kMediansKeyWord: String = "kmedians"
-
-  def kMediansOperator: Parser[KMediansExp] =
-    kMediansKeyWord ~ "(" ~ identifier ~ "," ~ int ~ ")" ^^
-      { case kmed ~ lpar ~ id ~ c1 ~ k ~ rpar =>
+trait KMedians extends BaseParsing with LazyLogging {
+  def kMediansOperator : Parser[KMediansExp] =
+    kMediansKeyWord ~ "(" ~ identifier ~ "," ~ posInt ~ ")" ^^
+      { case km ~ lpar ~ id ~ c ~ k ~ rpar =>
         KMediansExp(id, k, memory)
       }
 }
 
-case class KMediansExp(field: String, k: Int, memory: HashMap[String, String])
-    extends OperatorExp(field, memory) with Util {
-
+case class KMediansExp(identifier: String, k: Int, memory: HashMap[String, String])
+  extends OperatorExp(identifier, memory) with Util with LazyLogging {
   override def createOpString(): String = {
-    val lstream = memory.getOrElse(Constants.CurrentLStream, "")
-    val rstream = memory.getOrElse(Constants.CurrentRStream, "")
+    logger.info("KMediansExp.createOpString")
+    val lstream = memory(Constants.CurrentLStream)
+    val rstream = memory(Constants.CurrentRStream)
+    val tupleType = memory(Constants.TupleType)
 
-    // Get the tuple type of the input stream
-  
-    val tupleType = memory.getOrElse(lstream + Constants.TupleType, "")
-    memory += Constants.TupleType -> tupleType
+    val numKeys = memory(lstream + Constants.NumKeys).toInt
+    var keysString = ""
+    for (i <- 0 until numKeys) {
+      keysString = keysString +
+        memory(lstream + Constants.KeyStr + i) + ", "
+    }
+    keysString = keysString.dropRight(2)
 
-    // Generate SAM code for the K-medians operator
-    val opString = s"""identifier = "$field";
-    auto $field = std::make_shared<KMedians<$tupleType>>($k);
-    ${addRegisterStatements(field, rstream, memory)}"""
-
-    opString
+    var rString = "  identifier = \"" + identifier + "\";\n"
+    rString += "  auto " + identifier +
+      " = std::make_shared<KMedians<" + tupleType +
+      ", " + k.toString + ", " + keysString + ">>(" +
+      k.toString + ");\n"
+    rString += addRegisterStatements(lstream, rstream, memory, identifier)
+    rString
   }
-
- override def addRegisterStatements(identifier: String, rstream: String, memory: HashMap[String, String]): String = {
-  val producer = "producer" // Replace with the appropriate producer object
-  val subscriber = "subscriber" // Replace with the appropriate subscriber object
-
-  s"""addOperator($identifier);
-  registerConsumer($identifier, "$identifier");
-  if ($subscriber != NULL) {
-    $producer->registerSubscriber($subscriber, $identifier);
-  }"""
-}
-
 }
