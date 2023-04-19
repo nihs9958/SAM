@@ -18,7 +18,7 @@ trait KMedians extends BaseParsing {
 case class KMediansExp(field: String, k: Int, memory: HashMap[String, String])
     extends OperatorExp(field, memory) with Util {
 
-  override def createOpString(): String = {
+    override def createOpString(): String = {
     val lstream = memory.getOrElse(Constants.CurrentLStream, "")
     val rstream = memory.getOrElse(Constants.CurrentRStream, "")
 
@@ -29,21 +29,21 @@ case class KMediansExp(field: String, k: Int, memory: HashMap[String, String])
 
     // Generate SAM code for the K-medians operator
     val opString = s"""identifier = "$field";
-    auto $field = std::make_shared<KMedians<$tupleType>>($k);
-    ${addRegisterStatements(field, rstream, memory)}"""
+auto $field = std::make_shared<KMedians<$tupleType>>($k);
+${addRegisterStatements(field, rstream, memory)}"""
 
     opString
   }
 
- override def addRegisterStatements(identifier: String, rstream: String, memory: HashMap[String, String]): String = {
-  val producer = "producer" // Replace with the appropriate producer object
-  val subscriber = "subscriber" // Replace with the appropriate subscriber object
+  override def addRegisterStatements(identifier: String, rstream: String, memory: HashMap[String, String]): String = {
+    val producer = "producer" // Replace with the appropriate producer object
+    val subscriber = "subscriber" // Replace with the appropriate subscriber object
 
-  s"""addOperator($identifier);
-  registerConsumer($identifier, "$identifier");
-  if ($subscriber != NULL) {
-    $producer->registerSubscriber($subscriber, $identifier);
-  }"""
-}
+    s"""addOperator($identifier);
+registerConsumer($identifier, "$identifier");
+if ($subscriber != NULL) {
+  $producer->registerSubscriber($subscriber, $identifier);
+}"""
+  }
 
 }
