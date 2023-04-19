@@ -31,7 +31,7 @@ class KMediansSpec extends FlatSpec with KMedians {
   it must "generate correct C++ code" in {
   val input = "kmedians(Stream1, 5)"
   val expectedOutput = """|identifier = "Stream1";
-                          |auto Stream1 = std::make_shared<KMedians<$tupleType>>(5);
+                          |auto Stream1 = std::make_shared<KMedians<>>(5);
                           |addOperator(Stream1);
                           |registerConsumer(Stream1, "Stream1");
                           |if (subscriber != NULL) {
