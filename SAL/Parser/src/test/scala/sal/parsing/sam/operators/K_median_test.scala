@@ -1,14 +1,15 @@
 package sal.parsing.sam.operators
 
-import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest._
 import org.scalatest.matchers.should.Matchers
 import scala.collection.mutable.HashMap
+import sal.parsing.sam.Constants
 
-class KMediansSpec extends AnyFlatSpec with Matchers with KMedians {
+class KMediansSpec extends flatspec.AnyFlatSpec with Matchers with KMedians {
   
   "kMediansOperator" should "parse K-medians operator correctly" in {
     val input = "kmedians(myField, 3)"
-    parse(kMediansOperator, input) match {
+    parseAll(kMediansOperator, input) match {
       case Success(result, _) =>
         result.field shouldBe "myField"
         result.k shouldBe 3
