@@ -22,7 +22,7 @@ case class KMediansExp(field: String, k: Int, memory: HashMap[String, String])
   val lstream = memory.getOrElse(Constants.CurrentLStream, "")
   val rstream = memory.getOrElse(Constants.CurrentRStream, "")
 
-  // Get the tuple type of the input stream
+  // Get the tuple type of the input stream11
   val tupleType = memory.getOrElse(lstream + Constants.TupleType, "")
   memory += Constants.TupleType -> tupleType
 
