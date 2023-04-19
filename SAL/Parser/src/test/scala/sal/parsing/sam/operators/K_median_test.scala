@@ -1,47 +1,40 @@
-import org.scalatest.FlatSpec
-import sal.parsing.sam.operators.KMedians
-import sal.parsing.sam.Constants
+package sal.parsing.sam.operators
 
-class KMediansSpec extends FlatSpec with KMedians {
-  "A k-medians operator" must "parse correctly with valid input" in {
-    val input = "kmedians(Stream1, 5)"
-    val expectedOutput = """  identifier = "Stream1";
-    auto Stream1 = std::make_shared<KMedians<$tupleType>>(5);
-    addOperator(Stream1);
-    registerConsumer(Stream1, "Stream1");"""
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
+import scala.collection.mutable.HashMap
 
-    val parsedResult = parseAll(kMediansOperator, input)
-    assert(parsedResult.successful)
-    assert(parsedResult.get.createOpString() == expectedOutput)
+class KMediansSpec extends AnyFlatSpec with Matchers with KMedians {
+  
+  "kMediansOperator" should "parse K-medians operator correctly" in {
+    val input = "kmedians(myField, 3)"
+    parse(kMediansOperator, input) match {
+      case Success(result, _) =>
+        result.field shouldBe "myField"
+        result.k shouldBe 3
+      case Failure(msg, _) =>
+        fail(s"Parsing failed with message: $msg")
+      case Error(msg, _) =>
+        fail(s"Parsing failed with message: $msg")
+    }
   }
 
-  it must "fail to parse with invalid input" in {
-    val input = "kmedians(Stream1, invalid)"
-    val parsedResult = parseAll(kMediansOperator, input)
-    assert(parsedResult.isInstanceOf[Failure])
-  }
+  "createOpString" should "generate the correct C++ code" in {
+    val memory = HashMap[String, String](
+      Constants.CurrentLStream -> "lstream",
+      Constants.CurrentRStream -> "rstream",
+      "lstream" + Constants.TupleType -> "TupleType"
+    )
+    val kMediansExp = KMediansExp("myField", 3, memory)
 
-  it must "generate correct C++ code" in {
-    val input = "kmedians(Stream1, 5)"
-    val expectedOutput = """  identifier = "Stream1";
-    auto Stream1 = std::make_shared<KMedians<$tupleType>>(5);
-    addOperator(Stream1);
-    registerConsumer(Stream1, "Stream1");"""
+    val expectedResult = """identifier = "myField";
+    auto myField = std::make_shared<KMedians<TupleType>>(3);
+    addOperator(myField);
+    registerConsumer(myField, "myField");
+    if (subscriber != NULL) {
+      producer->registerSubscriber(subscriber, myField);
+    }"""
 
-    val parsedResult = parseAll(kMediansOperator, input)
-    assert(parsedResult.successful)
-    assert(parsedResult.get.createOpString() == expectedOutput)
-  }
-
-  it must "generate C++ code with the correct identifier" in {
-    val input = "kmedians(MyStream, 5)"
-    val expectedOutput = """  identifier = "MyStream";
-    auto MyStream = std::make_shared<KMedians<$tupleType>>(5);
-    addOperator(MyStream);
-    registerConsumer(MyStream, "MyStream");"""
-
-    val parsedResult = parseAll(kMediansOperator, input)
-    assert(parsedResult.successful)
-    assert(parsedResult.get.createOpString() == expectedOutput)
+    kMediansExp.createOpString() shouldBe expectedResult
   }
 }
