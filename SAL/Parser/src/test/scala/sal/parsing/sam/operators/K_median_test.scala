@@ -1,6 +1,7 @@
 import org.scalatest.FlatSpec
 import sal.parsing.sam.operators.KMedians
 import sal.parsing.sam.Constants
+import sal.parsing.sam.Util
 
 class KMediansSpec extends FlatSpec with KMedians {
 
