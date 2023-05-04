@@ -25,32 +25,26 @@ class KMediansSpec extends FlatSpec with KMedians with Util {
   }
 
   it must "generate correct C++ code" in {
-    memory.clear()
-    memory += Constants.CurrentLStream -> "stream1"
-    memory += Constants.CurrentRStream -> "stream2"
-    memory += "stream1" + Constants.TupleType -> "TupleType1"
-    val k = 3
-    val field = "field1"
+    val input = "kmedians(field1, 3)"
     val expectedOutput =
-      s"""|identifier = "$field";
-          |auto $field = std::make_shared<KMedians<TupleType1>>($k);
-          |addOperator($field);
-          |registerConsumer($field, "stream2");
+      s"""|identifier = "field1";
+          |auto field1 = std::make_shared<KMedians<>>(3);
+          |addOperator(field1);
+          |registerConsumer(field1, "field1");
           |if (subscriber != NULL) {
-          |  producer->registerSubscriber(subscriber, $field);
+          |  producer->registerSubscriber(subscriber, field1);
           |}""".stripMargin
-    val actualOutput = createOpString(field, k, memory)
-    assert(actualOutput.trim.startsWith(expectedOutput.trim))
+    val parsedResult = parseAll(kMediansOperator, input)
+    assert(parsedResult.successful)
+    assert(parsedResult.get.createOpString() == expectedOutput)
   }
 
   it must "generate C++ code with the correct identifier" in {
-    memory.clear()
-    memory += Constants.CurrentLStream -> "stream1"
-    memory += Constants.CurrentRStream -> "stream2"
-    memory += "stream1" + Constants.TupleType -> "TupleType1"
-    val k = 3
-    val field = "field1"
-    val actualOutput = createOpString(field, k, memory)
-    assert(actualOutput.contains(s"""identifier = "$field";"""))
+    val input = "kmedians(field1, 3)"
+    val expectedIdentifier = """identifier = "field1";"""
+
+    val parsedResult = parseAll(kMediansOperator, input)
+    assert(parsedResult.successful)
+    assert(parsedResult.get.createOpString().contains(expectedIdentifier))
   }
 }
