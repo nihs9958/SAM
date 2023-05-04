@@ -45,3 +45,5 @@ if ($subscriber != NULL) {
   $producer->registerSubscriber($subscriber, $identifier);
 }"""
   }
+      
+}
