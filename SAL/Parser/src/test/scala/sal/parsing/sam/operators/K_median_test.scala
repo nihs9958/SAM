@@ -39,7 +39,7 @@ class KMediansSpec extends FlatSpec with KMedians with Util {
           |if (subscriber != NULL) {
           |  producer->registerSubscriber(subscriber, $field);
           |}""".stripMargin
-    val actualOutput = kMediansOperator(field, k, memory).createOpString()
+    val actualOutput = createOpString(field, k, memory)
     assert(actualOutput.trim.startsWith(expectedOutput.trim))
   }
 
@@ -50,7 +50,7 @@ class KMediansSpec extends FlatSpec with KMedians with Util {
     memory += "stream1" + Constants.TupleType -> "TupleType1"
     val k = 3
     val field = "field1"
-    val actualOutput = kMediansOperator(field, k, memory).createOpString()
+    val actualOutput = createOpString(field, k, memory)
     assert(actualOutput.contains(s"""identifier = "$field";"""))
   }
 }
