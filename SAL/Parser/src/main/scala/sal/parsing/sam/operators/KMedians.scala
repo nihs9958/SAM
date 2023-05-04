@@ -1,10 +1,9 @@
-import sal.parsing.sam.operators.KMedians
-import sal.parsing.sam.operators.OperatorExp
+package sal.parsing.sam.operators
+
+import scala.collection.mutable.HashMap
+import sal.parsing.sam.BaseParsing
 import sal.parsing.sam.Constants
 import sal.parsing.sam.Util
-import scala.util.{Try, Success, Failure}
-import scala.collection.mutable.HashMap
-import org.scalatest.FlatSpec
 
 trait KMedians extends BaseParsing {
   val kMediansKeyWord: String = "kmedians"
