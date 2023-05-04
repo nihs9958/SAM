@@ -16,13 +16,13 @@ class KMediansSpec extends FlatSpec with KMedians with Util {
       case Error(msg, _) => fail(msg)
     }
   }
-
+  
   it must "fail to parse an invalid input string" in {
     val input = "kmedians(,)"
-    assertThrows[Exception] {
-      parseAll(kMediansOperator, input)
-    }
+    val parsedResult = parseAll(kMediansOperator, input)
+    assert(parsedResult.isInstanceOf[Failure])
   }
+
 
   it must "generate correct C++ code" in {
     val input = "kmedians(field1, 3)"
