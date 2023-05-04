@@ -3,6 +3,7 @@ import sal.parsing.sam.operators.KMedians
 import sal.parsing.sam.Constants
 import sal.parsing.sam.Util
 
+
 class KMediansSpec extends FlatSpec with KMedians with Util {
 
   "A k-medians operator" must "parse a valid input string" in {
